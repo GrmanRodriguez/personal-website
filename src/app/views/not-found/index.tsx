@@ -1,16 +1,22 @@
 import React from 'react';
+import { useEffect } from 'react';
 import Helmet from 'react-helmet';
+import { ToggleNavbarProps } from '../../util';
 
-function NotFound() {
-    return (
-      <>
-      <Helmet>
-        <title>Not found | Germán Rodriguez</title>
-      </Helmet>
-      <div> 404 </div>
-      </>
-      
-    );
-  }
+function NotFound( {setWhiteNavbar} : ToggleNavbarProps ) {
+
+  useEffect(()=>{
+    setWhiteNavbar(false)
+  }, [])
+
+  return (
+    <>
+    <Helmet>
+      <title>Not found | Germán Rodriguez</title>
+    </Helmet>
+    <div> 404 </div>
+    </>
+  );
+}
   
 export default NotFound;

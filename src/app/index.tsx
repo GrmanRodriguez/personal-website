@@ -29,7 +29,9 @@ function App() {
       <Route exact path="/contact">
         <Contact setWhiteNavbar={setWhiteNavbar} />
       </Route>
-      <Route component={NotFound} />
+      <Route>
+        <NotFound setWhiteNavbar={setWhiteNavbar}></NotFound>
+      </Route>
     </Switch>
     <GlobalStyle/>
     </BrowserRouter>
