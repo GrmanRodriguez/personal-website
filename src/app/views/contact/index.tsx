@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { ToggleNavbarProps } from '../../util';
 import { GridLayout, LayoutColors, StyledButton } from '../../style/shared-style-components';
 import { FormIntroduction, FormPanel, FormMessage, Form, Label, SingleLineInput, MultiLineInput, FormButton } from './styles';
-import { useEffect } from 'react';
+import usePopup from '../../hooks/usePopup';
 
 function Contact({ setWhiteNavbar } : ToggleNavbarProps) : JSX.Element {
 
@@ -18,11 +18,14 @@ function Contact({ setWhiteNavbar } : ToggleNavbarProps) : JSX.Element {
     const [contactEmail, setContactEmail] = useState<string>("");
     const [emailMessage, setEmailMessage] = useState<string>("");
 
+    const [PopupComponent, showPopup] = usePopup();
+    const popupTimeout : number = 3000;
+
     const isEmailAddressValid = function(email : string) : boolean {
         return emailRegularExpression.test(email);
     }
 
-    const isMessageNotEmpty = function(message : string) : boolean {
+    const isMessageWithText = function(message : string) : boolean {
         return message !== "";
     }
     
@@ -47,25 +50,31 @@ function Contact({ setWhiteNavbar } : ToggleNavbarProps) : JSX.Element {
     }
 
     const onFormSend = async function() : Promise<void> {
-        if (!isEmailAddressValid(contactEmail))
-        {
-            alert(`Address ${contactEmail} is not valid.`);
-            return;
-        }
-        if (!isMessageNotEmpty(emailMessage))
-        {
-            alert("Unable to send an empty message.");
-            return;
+        try {
+            if (!isEmailAddressValid(contactEmail))
+            {
+                showPopup(`Address ${contactEmail} is not valid.`, popupTimeout, true);
+                return;
+            }
+            if (!isMessageWithText(emailMessage))
+            {
+                showPopup("Unable to send an empty message.", popupTimeout, true);
+                return;
+            }            
+            await sendEmail();
+            setContactName("");
+            setContactEmail("");
+            setEmailMessage("");
+            showPopup("Email sent! 📨", popupTimeout)
+        } catch (err) {
+            showPopup("Something wrong happened when sending the email 😿. Try again?", popupTimeout, true)
         }
         
-        await sendEmail();
-        setContactName("");
-        setContactEmail("");
-        setEmailMessage("");
     }
 
     return (
         <GridLayout color={LayoutColors.Gray}>
+            {PopupComponent}
             <FormPanel>
                 <FormIntroduction>
                     I'm always open to new conversations!
