@@ -5,6 +5,7 @@ import { GlobalStyle } from './style/global-style';
 import Home from './views/home';
 import About from './views/about';
 import Contact from './views/contact'
+import Play from './views/play';
 import NotFound from './views/not-found';
 import NavigationBar from './components/navigation-bar';
 
@@ -28,6 +29,9 @@ function App() {
       </Route>
       <Route exact path="/contact">
         <Contact setWhiteNavbar={setWhiteNavbar} />
+      </Route>
+      <Route exact path="/play">
+        <Play setWhiteNavbar={setWhiteNavbar} />
       </Route>
       <Route>
         <NotFound setWhiteNavbar={setWhiteNavbar}></NotFound>
