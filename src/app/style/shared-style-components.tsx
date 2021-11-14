@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { device } from '../media';
 
 export enum LayoutColors {
     White = "var(--white)",
@@ -72,5 +73,29 @@ export const StyledButton = styled.button<StyledButtonProps>`
         cursor: pointer;
         transform: scale(1.1);
         filter: brightness(120%);
+    }
+`
+
+export const GamePanel = styled.div`
+    grid-column: 2/12;
+    grid-row: 3/12;
+    background-color: var(--white);
+    color: var(--white);
+    box-shadow: 0px 4px 15px -1px var(--gray);
+    border-radius: 10px;
+    display: grid;
+    grid-template-rows: repeat(12, 1fr);
+    grid-template-columns: repeat(12, 1fr); 
+`;
+
+export const GameCanvasContainer = styled.div`
+    grid-column: 2/7;
+    grid-row: 2/12;
+    border: 1px solid var(--gray);
+    position: relative;
+
+    @media ${device.mobileL} {
+        grid-column: 2/12;
+        grid-row: 2/8;
     }
 `
