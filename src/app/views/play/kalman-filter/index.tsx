@@ -132,7 +132,6 @@ function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
             } else {
                 noisyPosition.push(newNoisy);
             }
-            //console.log(kalman.PPriori);
             let kalmanResult = kalman.step(input, [[newNoisy[0]],[newNoisy[1]]]);
             if (Array.isArray(kalmanResult[0]) && Array.isArray(kalmanResult[1])) {
                 let kalmanResultFormatted = [kalmanResult[0][0], kalmanResult[1][0]];
