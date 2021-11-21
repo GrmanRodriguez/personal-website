@@ -1,9 +1,12 @@
 import { floor } from 'mathjs';
 import React, { useEffect, useRef } from 'react'
 import StateSpaceSystem from '../../../components/state-space-system';
-import { GameCanvasContainer, GamePanel, GridLayout, LayoutColors } from '../../../style/shared-style-components';
+import { GameCanvasContainer, GamePanel, GridLayout, LayoutColors, StyledButton, StyledSlider } from '../../../style/shared-style-components';
 import { clearCanvas, drawCircle, drawLine, generateBoxMullerGaussian, resizeCanvas, ToggleNavbarProps } from '../../../util';
 import Filter from './filter';
+import { useMediaQuery } from 'react-responsive';
+import { deviceSizes } from '../../../media';
+import { GameMenu, ResetButtonContainer, SliderContainer } from './styles';
 
 function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
     useEffect(()=>{
@@ -29,11 +32,15 @@ function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
         const canvas = canvasRef.current;
         const context = canvas?.getContext('2d');
         if (context) {
+            reset()
             requestAnimationFrame((frame)=>{render(context, frame)})
         }
     }, []) // eslint-disable-next-line
 
+    const isMobile = useMediaQuery({maxWidth: deviceSizes.mobileL});
+
     let timeout : NodeJS.Timeout;
+    let enableDraw : boolean = true;
 
     let command : string = '';
     let position : number[] = [];
@@ -42,58 +49,34 @@ function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
 
     let amountOfPoints = 50;
 
-    let trueStateColor : string = "#dbbe00"
-    let noisyStateColor : string = "#afafaf"
-    let kalmanStateColor : string = "#3f3f3f"
+    const trueStateColor : string = "#dbbe00"
+    const noisyStateColor : string = "#afafaf"
+    const kalmanStateColor : string = "#3f3f3f"
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const dt = 0.1;
+    const limits : number[] = [10,-10]; // Limits used for scaling canvas
 
-    const friction = 0.6;
-    const mass = 1;
+    let friction = 0.6;
+    let mass = 1;
+    let processVariance = 0.001;
+    const maxProcessVariance = 0.005;
+    let measurementVariance = 0.774; 
+    const maxMeasurementVariance = 3;   
 
     let animationStart : number | null = null;
 
     const animationFrameDruation : number = 1000;
 
-    const A = [[-friction, 0, 0, 0],
-    [1, 0, 0, 0],
-    [0, 0, -friction, 0],
-    [0, 0, 1, 0]];
-
-    const B = [[1/mass, 0],
-    [0, 0],
-    [0, 1/mass],
-    [0, 0]];
-
+    let A : number[][]; // State Matrix
+    let B : number[][]; // Input Matrix
     const C = [[0, 1, 0, 0],
-    [0, 0, 0, 1]];
-
-    const dt = 0.1;
-
-    const Qk = 0.001;
-
-    const QkMatrix = [
-        [Qk, 0, 0, 0],
-        [0, Qk, 0, 0],
-        [0, 0, Qk, 0],
-        [0, 0, 0, Qk]
-    ];
-
-    const Rk = 0.774;
-    const measurementNoiseDeviation = Math.sqrt(Rk);
-
-    const RkMatrix = [
-        [Rk, 0],
-        [0, Rk]
-    ];
-
-    const system = new StateSpaceSystem(A,B,C,dt);
-
-    system.addDisturbance(Qk);
-
-    const kalman = new Filter(system.A, system.B, system.C, QkMatrix, RkMatrix, [[0],[0],[0],[0]], true);
-
-    const limits : number[] = [10,-10];
+    [0, 0, 0, 1]]; // Observation Matrix
+    let Qk : number[][] // Process Noise Covariance Matrix
+    let measurementDeviation : number; 
+    let Rk : number[][]; // Measurement Noise Covariance Matrix
+    let system : StateSpaceSystem; // Model
+    let kalman : Filter; // Kalman Filter
 
     function recalculateCoordinates(context : CanvasRenderingContext2D, point : number[], limits : number[]) : number[] {
         let canvasToDraw = context.canvas;
@@ -125,7 +108,7 @@ function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
         let output = system.step(input);
         if (Array.isArray(output[0]) && Array.isArray(output[1])) {
             position = [output[0][0], output[1][0]];
-            let newNoisy = [position[0] + generateBoxMullerGaussian(measurementNoiseDeviation), position[1] + generateBoxMullerGaussian(measurementNoiseDeviation)];
+            let newNoisy = [position[0] + generateBoxMullerGaussian(measurementDeviation), position[1] + generateBoxMullerGaussian(measurementDeviation)];
             if (noisyPosition.length === amountOfPoints) {
                 noisyPosition.unshift(newNoisy);
                 noisyPosition.pop();
@@ -143,6 +126,48 @@ function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
                 }
             }
         }
+    }
+
+    function reset() {
+        noisyPosition = [];
+        kalmanPosition = [];
+
+        A = [[-friction, 0, 0, 0],
+            [1, 0, 0, 0],
+            [0, 0, -friction, 0],
+            [0, 0, 1, 0]];
+        
+        B = [[1/mass, 0],
+            [0, 0],
+            [0, 1/mass],
+            [0, 0]];
+        
+        Qk =[[processVariance, 0, 0, 0],
+            [0, processVariance, 0, 0],
+            [0, 0, processVariance, 0],
+            [0, 0, 0, processVariance]];
+
+        Rk =[[measurementVariance, 0],
+            [0, measurementVariance]];
+
+        measurementDeviation = Math.sqrt(measurementVariance);
+
+        system = new StateSpaceSystem(A,B,C,dt);
+        system.addDisturbance(processVariance);
+
+        kalman = new Filter(system.A, system.B, system.C, Qk, Rk, [[0],[0],[0],[0]], true);
+    }
+
+    function onProcessNoiseSlide(e : React.ChangeEvent<HTMLInputElement>) {
+        let newProcessVariance = parseFloat(e.target.value);
+        processVariance = newProcessVariance === 0 && measurementVariance === 0 ? 0.0001 : newProcessVariance;
+        reset();
+    }
+
+    function onMeasurementNoiseSlide(e : React.ChangeEvent<HTMLInputElement>) {
+        let newMeasurementVariance = parseFloat(e.target.value);
+        measurementVariance = newMeasurementVariance === 0 && processVariance === 0 ? 0.01 : newMeasurementVariance;
+        reset();
     }
 
     function draw(context : CanvasRenderingContext2D) : void {
@@ -178,17 +203,19 @@ function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
     }
 
     function render(context : CanvasRenderingContext2D, frame : number) {
-        if (!animationStart) {
-            animationStart = frame;
-        } else {
-            let progress = frame - animationStart;
-            if (progress < animationFrameDruation) {
-                animationStart = null;
-                update();
-                draw(context);
-            }        
+        if (enableDraw) {
+            if (!animationStart) {
+                animationStart = frame;
+            } else {
+                let progress = frame - animationStart;
+                if (progress < animationFrameDruation) {
+                    animationStart = null;
+                    update();
+                    draw(context);
+                }        
+            }
+            requestAnimationFrame((newFrame)=>{render(context, newFrame)});
         }
-        requestAnimationFrame((newFrame)=>{render(context, newFrame)});
     }
 
     return (
@@ -196,6 +223,30 @@ function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
             <GamePanel>
                 <GameCanvasContainer>
                     <canvas ref={canvasRef}></canvas>
+                    <GameMenu>
+                        <ResetButtonContainer>
+                            <StyledButton onClick={reset}>Reset</StyledButton>
+                        </ResetButtonContainer>
+                        <SliderContainer>
+                            <span>Process Disturbance:</span>
+                            <StyledSlider 
+                                type="range"
+                                onChange={onProcessNoiseSlide}
+                                max={maxProcessVariance.toString()}
+                                min="0"
+                                step="0.0001"
+                                defaultValue={processVariance.toString()}/>
+                            {!isMobile && <br/>}
+                            <span>Meas. Noise:</span>                            
+                            <StyledSlider 
+                                type="range"
+                                onChange={onMeasurementNoiseSlide}
+                                max={maxMeasurementVariance.toString()}
+                                min="0"
+                                step="0.01"
+                                defaultValue={measurementVariance.toString()}/>
+                        </SliderContainer>
+                    </GameMenu>
                 </GameCanvasContainer>
             </GamePanel>
         </GridLayout>

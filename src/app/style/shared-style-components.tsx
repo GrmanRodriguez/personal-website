@@ -76,6 +76,44 @@ export const StyledButton = styled.button<StyledButtonProps>`
     }
 `
 
+export const StyledSlider = styled.input`
+    & {
+        width: 100%;
+    }
+
+    &,
+    &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+    }
+
+    &::-webkit-slider-thumb {
+        height: 16px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: var(--yellow);
+        cursor: pointer;
+        box-shadow: 0px 2px 5px -1px var(--gray);
+        transition: transform var(--animation), filter var(--animation), box-shadow var(--animation);
+        margin-top: -4px; /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
+    }
+
+    &:focus::-webkit-slider-thumb,
+    &:hover::-webkit-slider-thumb {
+        transform: scale(1.3);
+        filter: brightness(120%);
+        box-shadow: 0px 2px 5px -1px var(--black);
+    }
+
+    &::-webkit-slider-runnable-track {
+        width: 100%;
+        height: 8px;
+        cursor: pointer;
+        box-shadow: 0px 2px 5px -1px var(--black);
+        background: var(--light-gray);
+        border-radius: 1000000px;
+    }
+`
+
 export const GamePanel = styled.div`
     grid-column: 2/12;
     grid-row: 3/12;

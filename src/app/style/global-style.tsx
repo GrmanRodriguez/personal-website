@@ -13,6 +13,7 @@ export const GlobalStyle = createGlobalStyle`
         --yellow:#dbbe00;
         --white:#fbfef9;
         --gray:#7c7c7c;
+        --light-gray:#aaa;
 
         --animation:0.3s ease-in-out;
         --animation-slower:0.6s ease-in-out;
