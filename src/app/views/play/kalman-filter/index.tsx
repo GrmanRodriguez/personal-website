@@ -6,29 +6,16 @@ import { clearCanvas, drawCircle, drawLine, generateBoxMullerGaussian, resizeCan
 import Filter from './filter';
 import { useMediaQuery } from 'react-responsive';
 import { deviceSizes } from '../../../media';
-import { GameMenu, ResetButtonContainer, SliderContainer } from './styles';
+import { GameMenu, ResetButtonContainer, SecondSliderContainer, SliderContainer } from './styles';
+import JoyStick from '../../../components/joystick';
 
 function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
     useEffect(()=>{
         setWhiteNavbar(false);
         document.addEventListener('keypress', (e) => {
-            switch (e.key) {
-                case 'w':
-                case 's':
-                case 'a':
-                case 'd':
-                    command = e.key;
-                    break;
-                default:
-                    break;
-            }
+            setCommandFromKey(e.key);
         })
-        document.addEventListener('keyup', ()=>{
-            clearTimeout(timeout);
-            timeout = setTimeout(()=>{
-                command = '';
-            }, 200);
-        })
+        document.addEventListener('keyup', clearCommand)
         const canvas = canvasRef.current;
         const context = canvas?.getContext('2d');
         if (context) {
@@ -40,6 +27,7 @@ function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
     const isMobile = useMediaQuery({maxWidth: deviceSizes.mobileL});
 
     let timeout : NodeJS.Timeout;
+    let joystickInterval : NodeJS.Timer;
     let enableDraw : boolean = true;
 
     let command : string = '';
@@ -48,6 +36,7 @@ function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
     let kalmanPosition : number[][] = [];
 
     let amountOfPoints = 50;
+    let maxAmountOfPoints = 150;
 
     const trueStateColor : string = "#dbbe00"
     const noisyStateColor : string = "#afafaf"
@@ -77,6 +66,28 @@ function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
     let Rk : number[][]; // Measurement Noise Covariance Matrix
     let system : StateSpaceSystem; // Model
     let kalman : Filter; // Kalman Filter
+
+    function setCommandFromKey(key : string) {
+        console.log(`command ${key} was pressed`)
+        switch (key) {
+            case 'w':
+            case 's':
+            case 'a':
+            case 'd':
+                command = key;
+                break;
+            default:
+                break;
+        }
+    }
+
+    function clearCommand() {
+        clearTimeout(timeout);
+        timeout = setTimeout(()=>{
+            console.log("command cleared")
+            command = '';
+        }, 200);
+    }
 
     function recalculateCoordinates(context : CanvasRenderingContext2D, point : number[], limits : number[]) : number[] {
         let canvasToDraw = context.canvas;
@@ -109,21 +120,17 @@ function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
         if (Array.isArray(output[0]) && Array.isArray(output[1])) {
             position = [output[0][0], output[1][0]];
             let newNoisy = [position[0] + generateBoxMullerGaussian(measurementDeviation), position[1] + generateBoxMullerGaussian(measurementDeviation)];
-            if (noisyPosition.length === amountOfPoints) {
-                noisyPosition.unshift(newNoisy);
+            noisyPosition.unshift(newNoisy);
+            if (noisyPosition.length === amountOfPoints) {   
                 noisyPosition.pop();
-            } else {
-                noisyPosition.push(newNoisy);
-            }
+            } 
             let kalmanResult = kalman.step(input, [[newNoisy[0]],[newNoisy[1]]]);
             if (Array.isArray(kalmanResult[0]) && Array.isArray(kalmanResult[1])) {
                 let kalmanResultFormatted = [kalmanResult[0][0], kalmanResult[1][0]];
-                if (kalmanPosition.length === amountOfPoints) {
-                    kalmanPosition.unshift(kalmanResultFormatted);
+                kalmanPosition.unshift(kalmanResultFormatted);
+                if (kalmanPosition.length === amountOfPoints) {  
                     kalmanPosition.pop();
-                } else {
-                    kalmanPosition.push(newNoisy);
-                }
+                } 
             }
         }
     }
@@ -158,24 +165,14 @@ function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
         kalman = new Filter(system.A, system.B, system.C, Qk, Rk, [[0],[0],[0],[0]], true);
     }
 
-    function onProcessNoiseSlide(e : React.ChangeEvent<HTMLInputElement>) {
-        let newProcessVariance = parseFloat(e.target.value);
-        processVariance = newProcessVariance === 0 && measurementVariance === 0 ? 0.0001 : newProcessVariance;
-        reset();
-    }
-
-    function onMeasurementNoiseSlide(e : React.ChangeEvent<HTMLInputElement>) {
-        let newMeasurementVariance = parseFloat(e.target.value);
-        measurementVariance = newMeasurementVariance === 0 && processVariance === 0 ? 0.01 : newMeasurementVariance;
-        reset();
-    }
-
     function draw(context : CanvasRenderingContext2D) : void {
         resizeCanvas(context);
         clearCanvas(context);
         
         let trueState : number[] = recalculateCoordinates(context, position, limits);
-        drawLine(context, trueState, recalculateCoordinates(context, noisyPosition[0], limits), noisyStateColor, 1);
+        if (noisyPosition.length > 0) {
+            drawLine(context, trueState, recalculateCoordinates(context, noisyPosition[0], limits), noisyStateColor, 1);
+        }
         noisyPosition.forEach((noisyVal, index)=>{
             let noisyState : number[] = recalculateCoordinates(context, noisyVal, limits);
             drawCircle(context, noisyState, 3, noisyStateColor);
@@ -200,6 +197,35 @@ function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
             }
         });   
             
+    }
+
+    function onProcessNoiseSlide(e : React.ChangeEvent<HTMLInputElement>) {
+        let newProcessVariance = parseFloat(e.target.value);
+        processVariance = newProcessVariance === 0 && measurementVariance === 0 ? 0.0001 : newProcessVariance;
+        reset();
+    }
+
+    function onMeasurementNoiseSlide(e : React.ChangeEvent<HTMLInputElement>) {
+        let newMeasurementVariance = parseFloat(e.target.value);
+        measurementVariance = newMeasurementVariance === 0 && processVariance === 0 ? 0.01 : newMeasurementVariance;
+        reset();
+    }
+
+    function onAmountOfPointsSlide(e: React.ChangeEvent<HTMLInputElement>) {
+        amountOfPoints = parseInt(e.target.value);
+        kalmanPosition = [];
+        noisyPosition = [];
+    }
+
+    function onJoyStickPress(input : string) {
+        joystickInterval = setInterval(()=>{
+            setCommandFromKey(input);
+        },100);
+    }
+
+    function onJoyStickRelease() {
+        clearInterval(joystickInterval);
+        clearCommand();
     }
 
     function render(context : CanvasRenderingContext2D, frame : number) {
@@ -246,9 +272,25 @@ function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
                                 step="0.01"
                                 defaultValue={measurementVariance.toString()}/>
                         </SliderContainer>
+                        <SecondSliderContainer>
+                            <span>Amount of points:</span>
+                            <StyledSlider
+                                type="range"
+                                onChange={onAmountOfPointsSlide}
+                                max={maxAmountOfPoints.toString()}
+                                min="1"
+                                step="1"
+                                defaultValue={amountOfPoints.toString()}/>
+                        </SecondSliderContainer>
                     </GameMenu>
                 </GameCanvasContainer>
             </GamePanel>
+            {isMobile && 
+            <JoyStick onUp={()=>{onJoyStickPress('w')}} 
+                    onLeft={()=>{onJoyStickPress('a')}} 
+                    onRight={()=>{onJoyStickPress('d')}}
+                    onDown={()=>{onJoyStickPress('s')}}
+                    onRelease={onJoyStickRelease}/>}
         </GridLayout>
     )
 }

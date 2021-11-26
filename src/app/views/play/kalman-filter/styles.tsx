@@ -31,3 +31,7 @@ export const SliderContainer = styled.div`
         font-size: 0.7em;
     }
 `
+
+export const SecondSliderContainer = styled(SliderContainer)`
+    grid-column: 9/12;
+`
