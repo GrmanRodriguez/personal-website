@@ -13,7 +13,7 @@ export const secondParagraph : JSX.Element =
     0 mean.
 </p>
 
-export const stateImage : JSX.Element = <img src="/assets/statespacewnoise.png"/>
+export const stateImage : JSX.Element = <img src="/assets/statespacewnoise.png" alt="state space system with disturbances"/>
 
 export const thirdParagraph : JSX.Element = 
 <p>

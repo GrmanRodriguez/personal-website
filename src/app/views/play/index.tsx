@@ -9,7 +9,7 @@ function Play({ setWhiteNavbar } : ToggleNavbarProps) : JSX.Element {
 
     useEffect(()=>{
         setWhiteNavbar(false)
-    }, [])
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <>

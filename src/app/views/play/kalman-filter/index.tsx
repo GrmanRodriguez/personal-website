@@ -23,7 +23,7 @@ function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
             reset()
             requestAnimationFrame((frame)=>{render(context, frame)})
         }
-    }, []) // eslint-disable-next-line
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     const isMobile = useMediaQuery({maxWidth: deviceSizes.mobileL});
 

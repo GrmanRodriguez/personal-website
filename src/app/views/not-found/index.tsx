@@ -7,7 +7,7 @@ function NotFound( {setWhiteNavbar} : ToggleNavbarProps ) {
 
   useEffect(()=>{
     setWhiteNavbar(false)
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>
