@@ -6,7 +6,7 @@ import { clearCanvas, drawCircle, drawLine, generateBoxMullerGaussian, resizeCan
 import Filter from './filter';
 import { useMediaQuery } from 'react-responsive';
 import { deviceSizes } from '../../../media';
-import { GameMenu, ResetButtonContainer, SecondSliderContainer, SliderContainer } from './styles';
+import { ExplanationContainer, GameMenu, MeasurementShape, ResetButtonContainer, SecondSliderContainer, SliderContainer, StateShape, KalmanShape } from './styles';
 import JoyStick from '../../../components/joystick';
 
 function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
@@ -247,6 +247,20 @@ function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
     return (
         <GridLayout color={LayoutColors.Yellow}>
             <GamePanel>
+                <ExplanationContainer>
+                    <div>
+                        <StateShape/>
+                        <span>True State</span>
+                    </div>
+                    <div>
+                        <MeasurementShape/>
+                        <span>Noisy Measurement</span>
+                    </div>
+                    <div>
+                        <KalmanShape/>
+                        <span>Kalman Filter Output</span>
+                    </div>
+                </ExplanationContainer>
                 <GameCanvasContainer>
                     <canvas ref={canvasRef}></canvas>
                     <GameMenu>

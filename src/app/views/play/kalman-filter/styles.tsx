@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { device } from "../../../media";
 
 export const GameMenu = styled.div`
     height: min(120px, 20%);
@@ -8,6 +9,55 @@ export const GameMenu = styled.div`
     display: grid;
     grid-template-columns: repeat(15, 1fr);
     place-items: center;
+
+    @media ${device.mobileL} {
+        grid-template-columns: repeat(12, 1fr);
+    }
+`
+
+export const ExplanationContainer = styled.div`
+    grid-column: 2/7;
+    grid-row: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+
+    & > div {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+        align-items: center;
+    }
+
+    & > div > span {
+        font-size: 0.7em;
+        font-weight: bold;
+        color: var(--black);
+    }
+
+    @media ${device.mobileL} {
+        grid-column: 2/12;
+    }
+`
+
+export const StateShape = styled.div`
+    width: 20px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background-color: var(--yellow);
+`
+
+export const MeasurementShape = styled.div`
+    width: 8px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background-color: var(--light-gray);
+`
+
+export const KalmanShape = styled.div`
+    width: 8px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background-color: var(--black);
 `
 
 export const ResetButtonContainer = styled.div`
@@ -25,10 +75,6 @@ export const SliderContainer = styled.div`
         color: var(--black);
         font-size: 0.7em;
         text-align: center;
-    }
-
-    & > span {
-        font-size: 0.7em;
     }
 `
 
