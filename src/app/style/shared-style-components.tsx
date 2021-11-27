@@ -137,3 +137,61 @@ export const GameCanvasContainer = styled.div`
         grid-row: 2/8;
     }
 `
+export const GameTitle = styled.h2`
+    grid-column: 8/12;
+    grid-row: 2;
+    font-size: 3em;
+    color: var(--black);
+    margin-top: 0;
+    margin-bottom: 0;
+    text-align: center;
+
+    @media ${device.mobileL} {
+        grid-column: 2/12;
+        grid-row: 8;
+        font-size: 2em;
+    }
+`
+
+export const GameExplanation = styled.div`
+    grid-column: 7/13;
+    grid-row: 3/12;
+    overflow-y: auto;
+    color: var(--black);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 90%;
+    margin-left: 5%;
+
+    text-align: justify;
+
+    & > * {
+        margin-top: 0;
+        margin-bottom: 1em;
+    }
+
+    @media ${device.mobileL} {
+        grid-column: 2/12;
+        grid-row: 9/12;
+        font-size: 0.9em;
+        width: 100%;
+        margin-left: 0;
+    }
+
+    a {
+      text-decoration: none; 
+      color: var(--yellow);
+      transition: filter var(--animation-slower); 
+      filter: brightness(80%);      
+    }
+
+    a:visited {
+        filter: brightness(60%);
+    }
+
+    a:hover, a:active {
+        filter: brightness(100%);
+    }
+`

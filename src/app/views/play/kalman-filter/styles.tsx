@@ -29,7 +29,7 @@ export const ExplanationContainer = styled.div`
     }
 
     & > div > span {
-        font-size: 0.7em;
+        font-size: 0.8em;
         font-weight: bold;
         color: var(--black);
     }

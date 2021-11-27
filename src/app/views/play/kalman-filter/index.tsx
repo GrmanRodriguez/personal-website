@@ -1,13 +1,14 @@
 import { floor } from 'mathjs';
 import React, { useEffect, useRef } from 'react'
 import StateSpaceSystem from '../../../components/state-space-system';
-import { GameCanvasContainer, GamePanel, GridLayout, LayoutColors, StyledButton, StyledSlider } from '../../../style/shared-style-components';
+import { GameCanvasContainer, GameExplanation, GamePanel, GameTitle, GridLayout, LayoutColors, StyledButton, StyledSlider } from '../../../style/shared-style-components';
 import { clearCanvas, drawCircle, drawLine, generateBoxMullerGaussian, resizeCanvas, ToggleNavbarProps } from '../../../util';
 import Filter from './filter';
 import { useMediaQuery } from 'react-responsive';
 import { deviceSizes } from '../../../media';
 import { ExplanationContainer, GameMenu, MeasurementShape, ResetButtonContainer, SecondSliderContainer, SliderContainer, StateShape, KalmanShape } from './styles';
 import JoyStick from '../../../components/joystick';
+import { fifthParagraph, firstParagraph, fourthParagraph, secondParagraph, stateImage, thirdParagraph } from './explanation';
 
 function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
     useEffect(()=>{
@@ -67,8 +68,10 @@ function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
     let system : StateSpaceSystem; // Model
     let kalman : Filter; // Kalman Filter
 
+    const howToPlayMobile : JSX.Element = <span>Use the JoyStick in the lower right corner to move the system around!</span>
+    const howToPlayDesktop : JSX.Element = <span>Use the <code>W-A-S-D</code> keys to move the system around!</span>
+
     function setCommandFromKey(key : string) {
-        console.log(`command ${key} was pressed`)
         switch (key) {
             case 'w':
             case 's':
@@ -84,7 +87,6 @@ function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
     function clearCommand() {
         clearTimeout(timeout);
         timeout = setTimeout(()=>{
-            console.log("command cleared")
             command = '';
         }, 200);
     }
@@ -247,6 +249,7 @@ function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
     return (
         <GridLayout color={LayoutColors.Yellow}>
             <GamePanel>
+                <GameTitle>Kalman Filter</GameTitle>
                 <ExplanationContainer>
                     <div>
                         <StateShape/>
@@ -298,6 +301,15 @@ function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
                         </SecondSliderContainer>
                     </GameMenu>
                 </GameCanvasContainer>
+                <GameExplanation>
+                    <b>{isMobile ? howToPlayMobile : howToPlayDesktop}</b>
+                    {firstParagraph}
+                    {secondParagraph}
+                    {stateImage}
+                    {thirdParagraph}
+                    {fourthParagraph}
+                    {fifthParagraph}    
+                </GameExplanation>
             </GamePanel>
             {isMobile && 
             <JoyStick onUp={()=>{onJoyStickPress('w')}} 
