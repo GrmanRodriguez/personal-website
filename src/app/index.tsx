@@ -9,6 +9,7 @@ import Play from './views/play';
 import NotFound from './views/not-found';
 import NavigationBar from './components/navigation-bar';
 import KalmanFilter from './views/play/kalman-filter';
+import PIDController from './views/play/pid';
 
 function App() {
 
@@ -36,6 +37,9 @@ function App() {
       </Route>
       <Route exact path="/play/kalman-filter">
         <KalmanFilter setWhiteNavbar={setWhiteNavbar} />
+      </Route>
+      <Route exact path="/play/pid">
+        <PIDController setWhiteNavbar={setWhiteNavbar} />
       </Route>
       <Route>
         <NotFound setWhiteNavbar={setWhiteNavbar}></NotFound>
