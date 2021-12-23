@@ -1,8 +1,7 @@
-import { floor } from 'mathjs';
 import React, { useEffect, useRef } from 'react'
 import StateSpaceSystem from '../../../components/state-space-system';
 import { GameCanvasContainer, GameExplanation, GamePanel, GameTitle, GridLayout, LayoutColors, StyledButton, StyledSlider } from '../../../style/shared-style-components';
-import { clearCanvas, drawCircle, drawLine, generateBoxMullerGaussian, resizeCanvas, ToggleNavbarProps } from '../../../util';
+import { clearCanvas, drawCircle, drawLine, generateBoxMullerGaussian, resizeCanvas, ToggleNavbarProps, recalculateCoordinates } from '../../../util';
 import Filter from './filter';
 import { useMediaQuery } from 'react-responsive';
 import { deviceSizes } from '../../../media';
@@ -91,13 +90,7 @@ function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
         }, 200);
     }
 
-    function recalculateCoordinates(context : CanvasRenderingContext2D, point : number[], limits : number[]) : number[] {
-        let canvasToDraw = context.canvas;
-        let newPoint : number[] = [];
-        newPoint[0] = floor((point[0]-limits[1])/(limits[0]-limits[1]) * canvasToDraw.width);
-        newPoint[1] = floor(canvasToDraw.height - (point[1]-limits[1])/(limits[0]-limits[1]) * canvasToDraw.height);
-        return newPoint;
-    }
+    
 
     function update() : void {
         let input : number[][];
