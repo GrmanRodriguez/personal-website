@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react'
 import { Helmet } from 'react-helmet'
 import StateSpaceSystem from '../../../components/state-space-system';
 import { GameCanvasContainer, GamePanel, GameTitle, GridLayout, LayoutColors, StyledButton, StyledSlider } from '../../../style/shared-style-components'
-import { clearCanvas, drawCircle, drawLine, getMousePositionOnCanvas, recalculateCoordinates, recalculateCoordinatesFromCanvasToLimits, resizeCanvas, ToggleNavbarProps } from '../../../util'
+import { clearCanvas, drawCircle, drawLine, drawText, getMousePositionOnCanvas, recalculateCoordinates, recalculateCoordinatesFromCanvasToLimits, resizeCanvas, ToggleNavbarProps } from '../../../util'
 import { GameMenu, ResetButtonContainer, SecondSliderContainer, SliderContainer } from '../kalman-filter/styles';
 import PID from './pid';
 
@@ -48,7 +48,7 @@ function PIDController({setWhiteNavbar} : ToggleNavbarProps ) : JSX.Element {
     let currentState : math.MathArray = [];
     let firstIteration : boolean;
 
-    let kp : number = 50;
+    let kp : number = 45;
     const maxKp : number = 70;
     let ki : number = 30;
     const maxKi : number = 70;
@@ -100,11 +100,26 @@ function PIDController({setWhiteNavbar} : ToggleNavbarProps ) : JSX.Element {
         drawLine(context, 
             recalculateCoordinates(context, [limits[0], setpoint], limits), 
             recalculateCoordinates(context, [limits[1], setpoint], limits), setpointColor, 3, true);
+        drawText(context, `Current Setpoint: ${setpoint.toFixed(2)}`, recalculateCoordinates(context, [3, setpoint + 0.6], limits), 17, 'Poppins', setpointColor);
     }
 
     function drawCurrentState(context : CanvasRenderingContext2D) {
         drawCircle(context,
             recalculateCoordinates(context, [currentStateXPosition, returnStateAsScalar(currentState)], limits), 10, stateColor);     
+        
+        drawText(context,
+                `Kp: ${kp.toFixed(2)}\n\nKi: ${ki.toFixed(2)}\n\nKd: ${kd.toFixed(2)}\n`,
+                recalculateCoordinates(context, [7,-7], limits),
+                17,
+                'Poppins',
+                setpointColor);
+
+        drawText(context,
+                `Position: ${returnStateAsScalar(currentState).toFixed(3)}`,
+                recalculateCoordinates(context, [-9, 9], limits),
+                17,
+                'Poppins',
+                setpointColor);
     }
 
     function drawPreviousStates(context : CanvasRenderingContext2D) {

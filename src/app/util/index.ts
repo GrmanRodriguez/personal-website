@@ -69,6 +69,17 @@ export function drawCircle(context : CanvasRenderingContext2D, point : number[],
     context.fill();
 }
 
+export function drawText(context : CanvasRenderingContext2D, text : string, where : number[], fontSize : number, font : string, color : string) {
+    const fontStyle = `${fontSize}px ${font}`
+    const textAsArray = text.split('\n');
+    context.fillStyle = color;
+    context.font = fontStyle;
+    console.log(textAsArray);
+    textAsArray.forEach((line, index) => {
+        context.fillText(line, where[0], where[1] + index * fontSize);
+    })
+}
+
 // Map a point from set limits to canvas size
 export function recalculateCoordinates(context : CanvasRenderingContext2D, point : number[], limits : number[]) : number[] {
     let canvasToDraw = context.canvas;
@@ -88,12 +99,12 @@ export function recalculateCoordinatesFromCanvasToLimits(context : CanvasRenderi
 
 export function getMousePositionOnCanvas(context : CanvasRenderingContext2D, event : React.MouseEvent) {
     const canvas = context.canvas;
-    let boundingRectangle = canvas.getBoundingClientRect(), // abs. size of element
-    scaleX = canvas.width / boundingRectangle.width,    // relationship bitmap vs. element for X
-    scaleY = canvas.height / boundingRectangle.height;  // relationship bitmap vs. element for Y
+    let boundingRectangle = canvas.getBoundingClientRect(), 
+    scaleX = canvas.width / boundingRectangle.width,    
+    scaleY = canvas.height / boundingRectangle.height;  
 
     return [
-    (event.clientX - boundingRectangle.left) * scaleX,   // scale mouse coordinates after they have
-    (event.clientY - boundingRectangle.top) * scaleY]     // been adjusted to be relative to element
+    (event.clientX - boundingRectangle.left) * scaleX,   
+    (event.clientY - boundingRectangle.top) * scaleY] 
     
 }
