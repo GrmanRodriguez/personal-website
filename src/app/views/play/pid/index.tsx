@@ -2,9 +2,9 @@ import math from 'mathjs';
 import React, { useEffect, useRef } from 'react'
 import { Helmet } from 'react-helmet'
 import StateSpaceSystem from '../../../components/state-space-system';
-import { GameCanvasContainer, GamePanel, GameTitle, GridLayout, LayoutColors, StyledButton } from '../../../style/shared-style-components'
+import { GameCanvasContainer, GamePanel, GameTitle, GridLayout, LayoutColors, StyledButton, StyledSlider } from '../../../style/shared-style-components'
 import { clearCanvas, drawCircle, drawLine, getMousePositionOnCanvas, recalculateCoordinates, recalculateCoordinatesFromCanvasToLimits, resizeCanvas, ToggleNavbarProps } from '../../../util'
-import { GameMenu, ResetButtonContainer } from '../kalman-filter/styles';
+import { GameMenu, ResetButtonContainer, SecondSliderContainer, SliderContainer } from '../kalman-filter/styles';
 import PID from './pid';
 
 
@@ -33,7 +33,7 @@ function PIDController({setWhiteNavbar} : ToggleNavbarProps ) : JSX.Element {
     const currentStateXPosition : number = 0;
 
     const mass : number = 1;
-    const friction : number = 0.6;
+    const friction : number = 0.1;
     const dt : number = 0.01;
 
     const A : number[][] = [[-friction, 0],
@@ -45,23 +45,26 @@ function PIDController({setWhiteNavbar} : ToggleNavbarProps ) : JSX.Element {
     const initialState : number[][] = [[0],[limits[1]]];
 
     let system : StateSpaceSystem;
-    let currentState : math.MathArray;
+    let currentState : math.MathArray = [];
     let firstIteration : boolean;
 
-    let kp : number = 1;
-    let ki : number = 0;
-    let kd : number = 4;
+    let kp : number = 50;
+    const maxKp : number = 70;
+    let ki : number = 30;
+    const maxKi : number = 70;
+    let kd : number = 55;
+    const maxKd : number = 70;
 
     let pid : PID;
 
-    const amountOfPoints : number = 15;
+    const amountOfPoints : number = 20;
     let previousStates : number[];
 
     let isMouseDown : boolean = false;
     let initialMousePosition : number[] = [-1,-1];
     let initialSetpoint : number = 100;
 
-    let setpoint : number;
+    let setpoint : number = 2;
 
     function reset() : void {
         system = new StateSpaceSystem(A, B, C, dt, initialState);
@@ -149,9 +152,22 @@ function PIDController({setWhiteNavbar} : ToggleNavbarProps ) : JSX.Element {
         isMouseDown = false;
     }
 
+    function handleKpSlide(event : React.ChangeEvent<HTMLInputElement>) {
+        kp = parseFloat(event.target.value);
+    }
+
+    function handleKiSlide(event : React.ChangeEvent<HTMLInputElement>) {
+        ki = parseFloat(event.target.value);
+    }
+
+    function handleKdSlide(event : React.ChangeEvent<HTMLInputElement>) {
+        kd = parseFloat(event.target.value);
+    }
+
     function update() {
         addStateToArray(returnStateAsScalar(currentState));
         pid.setSetpoint(setpoint);
+        pid.setGains(kp, ki, kd);
         const measurement = firstIteration ? initialState[1][0] : returnStateAsScalar(currentState);
         if (firstIteration) firstIteration = false;
         const input = pid.step(measurement);
@@ -199,6 +215,34 @@ function PIDController({setWhiteNavbar} : ToggleNavbarProps ) : JSX.Element {
                         <ResetButtonContainer>
                             <StyledButton onClick={reset}>Reset</StyledButton>
                         </ResetButtonContainer>
+                        <SliderContainer>
+                            <span>Kp:</span>
+                            <StyledSlider
+                                type="range"
+                                onChange={handleKpSlide}
+                                max={maxKp.toString()}
+                                min="0"
+                                step="0.1"
+                                defaultValue={kp.toString()}/>
+                            <span>Ki:</span>
+                            <StyledSlider
+                                type="range"
+                                onChange={handleKiSlide}
+                                max={maxKi.toString()}
+                                min="0"
+                                step="0.1"
+                                defaultValue={ki.toString()}/>
+                        </SliderContainer>
+                        <SecondSliderContainer>
+                            <span>Kd:</span>
+                            <StyledSlider
+                                type="range"
+                                onChange={handleKdSlide}
+                                max={maxKd.toString()}
+                                min="0"
+                                step="0.1"
+                                defaultValue={kd.toString()}/>
+                        </SecondSliderContainer>
                     </GameMenu>
                 </GameCanvasContainer>
             </GamePanel>
