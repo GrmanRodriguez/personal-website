@@ -74,7 +74,6 @@ export function drawText(context : CanvasRenderingContext2D, text : string, wher
     const textAsArray = text.split('\n');
     context.fillStyle = color;
     context.font = fontStyle;
-    console.log(textAsArray);
     textAsArray.forEach((line, index) => {
         context.fillText(line, where[0], where[1] + index * fontSize);
     })
