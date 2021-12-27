@@ -4,8 +4,8 @@ import { JoyStickButtonCover, JoyStickContainer, JoyStickDownButton, JoyStickLef
 interface JoyStickProps {
     onUp : ()=>void;
     onDown : ()=>void;
-    onLeft : ()=>void;
-    onRight : ()=>void;
+    onLeft? : ()=>void;
+    onRight? : ()=>void;
     onRelease? : ()=>void;
 }
 
@@ -13,8 +13,12 @@ function JoyStick({onUp, onDown, onLeft, onRight, onRelease} : JoyStickProps) : 
     return (
         <JoyStickContainer>
             <JoyStickUpButton onTouchStart={onUp} onTouchEnd={onRelease ? onRelease : undefined}/>
-            <JoyStickLeftButton onTouchStart={onLeft} onTouchEnd={onRelease ? onRelease : undefined}/>
-            <JoyStickRightButton onTouchStart={onRight} onTouchEnd={onRelease ? onRelease : undefined}/>
+            {
+                onLeft && <JoyStickLeftButton onTouchStart={onLeft} onTouchEnd={onRelease ? onRelease : undefined}/>
+            }
+            {
+                onRight && <JoyStickRightButton onTouchStart={onRight} onTouchEnd={onRelease ? onRelease : undefined}/>
+            }            
             <JoyStickDownButton onTouchStart={onDown} onTouchEnd={onRelease ? onRelease : undefined}/>
             <JoyStickButtonCover />
         </JoyStickContainer>

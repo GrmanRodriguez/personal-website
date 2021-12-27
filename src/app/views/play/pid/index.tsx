@@ -1,7 +1,10 @@
 import math from 'mathjs';
 import React, { useEffect, useRef } from 'react'
 import { Helmet } from 'react-helmet'
+import { useMediaQuery } from 'react-responsive';
+import JoyStick from '../../../components/joystick';
 import StateSpaceSystem from '../../../components/state-space-system';
+import { deviceSizes } from '../../../media';
 import { GameCanvasContainer, GamePanel, GameTitle, GridLayout, LayoutColors, StyledButton, StyledSlider } from '../../../style/shared-style-components'
 import { clearCanvas, drawCircle, drawLine, drawText, getMousePositionOnCanvas, recalculateCoordinates, recalculateCoordinatesFromCanvasToLimits, resizeCanvas, ToggleNavbarProps } from '../../../util'
 import { GameMenu, ResetButtonContainer, SecondSliderContainer, SliderContainer } from '../kalman-filter/styles';
@@ -19,6 +22,10 @@ function PIDController({setWhiteNavbar} : ToggleNavbarProps ) : JSX.Element {
     },[]) // eslint-disable-line react-hooks/exhaustive-deps
     
     const canvasRef = useRef<HTMLCanvasElement>(null);
+
+    const isMobile = useMediaQuery({ maxWidth: deviceSizes.mobileL });
+
+    const canvasFontSize = isMobile ? 10 : 17;
     
     const enableDraw : boolean = true;
 
@@ -44,6 +51,9 @@ function PIDController({setWhiteNavbar} : ToggleNavbarProps ) : JSX.Element {
                             [0, 1]];
     const initialState : number[][] = [[0],[limits[1]]];
 
+    let isStable : boolean = true;
+    const stabilityLimit : number = 100;
+
     let system : StateSpaceSystem;
     let currentState : math.MathArray = [];
     let firstIteration : boolean;
@@ -54,6 +64,9 @@ function PIDController({setWhiteNavbar} : ToggleNavbarProps ) : JSX.Element {
     const maxKi : number = 70;
     let kd : number = 55;
     const maxKd : number = 70;
+
+    let setpointChange : number = 0;
+    const deltaSetpoint : number = 0.2;
 
     let pid : PID;
 
@@ -69,6 +82,8 @@ function PIDController({setWhiteNavbar} : ToggleNavbarProps ) : JSX.Element {
     function reset() : void {
         system = new StateSpaceSystem(A, B, C, dt, initialState);
         pid = new PID(dt);
+
+        isStable = true;
 
         currentState = initialState;
 
@@ -100,24 +115,27 @@ function PIDController({setWhiteNavbar} : ToggleNavbarProps ) : JSX.Element {
         drawLine(context, 
             recalculateCoordinates(context, [limits[0], setpoint], limits), 
             recalculateCoordinates(context, [limits[1], setpoint], limits), setpointColor, 3, true);
-        drawText(context, `Current Setpoint: ${setpoint.toFixed(2)}`, recalculateCoordinates(context, [3, setpoint + 0.6], limits), 17, 'Poppins', setpointColor);
+        const setpointTextXPosition = isMobile ? 1 : 3;
+        drawText(context, `Current Setpoint: ${setpoint.toFixed(2)}`, recalculateCoordinates(context, [setpointTextXPosition, setpoint + 0.6], limits), canvasFontSize, 'Poppins', setpointColor);
     }
 
     function drawCurrentState(context : CanvasRenderingContext2D) {
         drawCircle(context,
             recalculateCoordinates(context, [currentStateXPosition, returnStateAsScalar(currentState)], limits), 10, stateColor);     
         
+        const stateTextPosition = isMobile ? [6, -3] : [7, -7];
+
         drawText(context,
                 `Kp: ${kp.toFixed(2)}\n\nKi: ${ki.toFixed(2)}\n\nKd: ${kd.toFixed(2)}\n`,
-                recalculateCoordinates(context, [7,-7], limits),
-                17,
+                recalculateCoordinates(context, stateTextPosition, limits),
+                canvasFontSize,
                 'Poppins',
                 setpointColor);
 
         drawText(context,
                 `Position: ${returnStateAsScalar(currentState).toFixed(3)}`,
                 recalculateCoordinates(context, [-9, 9], limits),
-                17,
+                canvasFontSize,
                 'Poppins',
                 setpointColor);
     }
@@ -137,6 +155,12 @@ function PIDController({setWhiteNavbar} : ToggleNavbarProps ) : JSX.Element {
                     previousStatesColor, 1);
             }            
         })
+    }
+
+    function drawUnstableMessage(context : CanvasRenderingContext2D) {
+        drawText(context, 
+            "Wow! It seems you made the\nsystem unstable 🥺.\nSet different gains and press\nthe Reset button!",
+            recalculateCoordinates(context, [limits[1], 1], limits), canvasFontSize + 3, 'Poppins', setpointColor);
     }
 
     function handleMouseMove(event : React.MouseEvent<HTMLCanvasElement>) {
@@ -179,22 +203,43 @@ function PIDController({setWhiteNavbar} : ToggleNavbarProps ) : JSX.Element {
         kd = parseFloat(event.target.value);
     }
 
+    function handleJoystickUpPress() {
+        setpointChange = deltaSetpoint;
+    }
+
+    function handleJoystickDownPress() {
+        setpointChange = -deltaSetpoint;
+    }
+
+    function handleJoystickRelease() {
+        setpointChange = 0;
+    }
+
     function update() {
         addStateToArray(returnStateAsScalar(currentState));
+        setpoint += setpointChange;
         pid.setSetpoint(setpoint);
         pid.setGains(kp, ki, kd);
         const measurement = firstIteration ? initialState[1][0] : returnStateAsScalar(currentState);
         if (firstIteration) firstIteration = false;
         const input = pid.step(measurement);
         currentState = system.step([[input]]);
+        if (Math.abs(returnStateAsScalar(currentState)) > stabilityLimit) {
+            isStable = false;
+        }
     }
 
     function draw(context : CanvasRenderingContext2D) {
         resizeCanvas(context);
         clearCanvas(context);
-        drawSetpoint(context);
-        drawPreviousStates(context);
-        drawCurrentState(context);        
+        if (isStable) {
+            drawSetpoint(context);
+            drawPreviousStates(context);
+            drawCurrentState(context);     
+        } else {
+            drawUnstableMessage(context);
+        }
+           
     }
 
     function render(context : CanvasRenderingContext2D, frame : number) {
@@ -261,6 +306,10 @@ function PIDController({setWhiteNavbar} : ToggleNavbarProps ) : JSX.Element {
                     </GameMenu>
                 </GameCanvasContainer>
             </GamePanel>
+            {isMobile && 
+            <JoyStick onUp={handleJoystickUpPress}
+                    onDown={handleJoystickDownPress}
+                    onRelease={handleJoystickRelease}/>}
         </GridLayout>
     </>)
 }
