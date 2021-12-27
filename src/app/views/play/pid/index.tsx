@@ -5,9 +5,10 @@ import { useMediaQuery } from 'react-responsive';
 import JoyStick from '../../../components/joystick';
 import StateSpaceSystem from '../../../components/state-space-system';
 import { deviceSizes } from '../../../media';
-import { GameCanvasContainer, GamePanel, GameTitle, GridLayout, LayoutColors, StyledButton, StyledSlider } from '../../../style/shared-style-components'
+import { GameCanvasContainer, GameExplanation, GamePanel, GameTitle, GridLayout, LayoutColors, StyledButton, StyledSlider } from '../../../style/shared-style-components'
 import { clearCanvas, drawCircle, drawLine, drawText, getMousePositionOnCanvas, recalculateCoordinates, recalculateCoordinatesFromCanvasToLimits, resizeCanvas, ToggleNavbarProps } from '../../../util'
 import { GameMenu, ResetButtonContainer, SecondSliderContainer, SliderContainer } from '../kalman-filter/styles';
+import { firstImage, firstParagraph, fifthParagraph, fourthParagraph, thirdParagraph, lastParagraph, secondImage, secondParagraph, seventhParagraph, sixthParagrah } from './explanation';
 import PID from './pid';
 
 
@@ -76,6 +77,9 @@ function PIDController({setWhiteNavbar} : ToggleNavbarProps ) : JSX.Element {
     let isMouseDown : boolean = false;
     let initialMousePosition : number[] = [-1,-1];
     let initialSetpoint : number = 100;
+
+    const howToPlayDesktop : JSX.Element = <span>Drag the gain sliders and the setpoint bar to see the controller response!</span>
+    const howToPlayMobile : JSX.Element = <span>Drag the gain sliders and use the joystick to move the setpoint and see the controller response!</span>
 
     let setpoint : number = 2;
 
@@ -305,6 +309,19 @@ function PIDController({setWhiteNavbar} : ToggleNavbarProps ) : JSX.Element {
                         </SecondSliderContainer>
                     </GameMenu>
                 </GameCanvasContainer>
+                <GameExplanation>
+                    <b>{isMobile ? howToPlayMobile : howToPlayDesktop }</b>
+                    {firstParagraph}
+                    {secondParagraph}
+                    {thirdParagraph}
+                    {firstImage}
+                    {fourthParagraph}
+                    {fifthParagraph}
+                    {sixthParagrah}
+                    {seventhParagraph}
+                    {secondImage}
+                    {lastParagraph}
+                </GameExplanation>
             </GamePanel>
             {isMobile && 
             <JoyStick onUp={handleJoystickUpPress}
