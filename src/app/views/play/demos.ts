@@ -13,9 +13,10 @@ export const demos : Demo[] = [
         url: '/play/kalman-filter'
     },
     {
-        title: 'Hello',
-        description: 'this is a test',
-        url: '/play/hello'
+        title: 'PID Controller',
+        image: 'pid.png',
+        description: 'The PID Controller is one of the most common strategies for control loops using feedback due to its efficacy and conceptual simplicity.\nIt measures the error of the system relative to its setpoint and determines the system input as a function of this error.\nA PID Controller with tunable gains is implemented on a simple system to see it in action.',
+        url: '/play/pid'
     },
     {
         title: 'Hello',

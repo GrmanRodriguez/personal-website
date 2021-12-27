@@ -15,14 +15,14 @@ class StateSpaceSystem {
     isDisturbed : boolean = false;
     disturbanceArray : number[] = [];
 
-    constructor(A : number[][], B : number[][], C : number[][], dt : number) {
+    constructor(A : number[][], B : number[][], C : number[][], dt : number, initialState? : number[][]) {
         this.stateSize = A[0].length;
         this.inputSize = B[0].length;
         this.dt = dt;
         this.A = (add(identity(this.stateSize), multiply(matrix(A), this.dt)) as math.Matrix);
         this.B = multiply(matrix(B),this.dt);
         this.C = matrix(C);
-        this.X = matrix(zeros(this.stateSize, 1));        
+        this.X = initialState ? matrix(initialState) : matrix(zeros(this.stateSize, 1));        
     }
 
     addDisturbance(Qk : number) {
