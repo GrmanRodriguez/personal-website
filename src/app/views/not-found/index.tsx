@@ -1,7 +1,9 @@
 import React from 'react';
 import { useEffect } from 'react';
 import Helmet from 'react-helmet';
+import { GridLayout, LayoutColors } from '../../style/shared-style-components';
 import { ToggleNavbarProps } from '../../util';
+import { MainText, Meme } from './styles';
 
 function NotFound( {setWhiteNavbar} : ToggleNavbarProps ) {
 
@@ -14,7 +16,12 @@ function NotFound( {setWhiteNavbar} : ToggleNavbarProps ) {
     <Helmet>
       <title>Not found | Germán Rodriguez</title>
     </Helmet>
-    <div> 404 </div>
+    <GridLayout color={LayoutColors.Gray}>
+      <MainText>
+        When you visit a URL that returns a 404:
+      </MainText>
+      <Meme src="https://miro.medium.com/max/910/1*snTXFElFuQLSFDnvZKJ6IA.png" alt="you are lost"/>
+    </GridLayout>
     </>
   );
 }
