@@ -18,7 +18,7 @@ function NotFound( {setWhiteNavbar} : ToggleNavbarProps ) {
     </Helmet>
     <GridLayout color={LayoutColors.Gray}>
       <MainText>
-        When you visit a URL that returns a 404:
+        When you visit a URL that returns 404:
       </MainText>
       <Meme src="https://miro.medium.com/max/910/1*snTXFElFuQLSFDnvZKJ6IA.png" alt="you are lost"/>
     </GridLayout>
