@@ -8,7 +8,7 @@ import { MainText, Meme } from './styles';
 function NotFound( {setWhiteNavbar} : ToggleNavbarProps ) {
 
   useEffect(()=>{
-    setWhiteNavbar(false)
+    setWhiteNavbar(true)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
