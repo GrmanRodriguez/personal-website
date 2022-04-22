@@ -31,9 +31,9 @@ export const NavBarLinks = styled.div<NavBarProps>`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    color: inherit;
+    color: ${props => props.whiteText ? "var(--white)" : "var(--black)"};
 
-    a {
+    a, a:link, a:visited, a:hover, a:active, a:focus {
         text-decoration: none;
         color: inherit;
     }

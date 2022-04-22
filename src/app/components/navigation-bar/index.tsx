@@ -70,7 +70,7 @@ function NavigationBar(navbarProps : NavbarProps) {
                             icon={faTimes}
                             size="lg" onClick={()=>{setExpandMenu(false)}}/>
                     </CloseExpandedMenu>                    
-                    <NavBarLinks>
+                    <NavBarLinks whiteText={false}>
                         {links}
                     </NavBarLinks>
                 </NavExpandedMenu>
@@ -81,7 +81,7 @@ function NavigationBar(navbarProps : NavbarProps) {
         return (
             <NavBar whiteText={navbarProps.white}>
                 <NavBarName>Germán Rodriguez</NavBarName>
-                <NavBarLinks>
+                <NavBarLinks whiteText={navbarProps.white}>
                     {links}
                 </NavBarLinks>
             </NavBar>
