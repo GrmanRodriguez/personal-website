@@ -1,6 +1,6 @@
 import React, {Suspense} from 'react'
 import { Helmet } from 'react-helmet'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import { ToggleNavbarProps } from '../../util'
 import Loading from '../../components/loading'
 import PlayHome from './home'
