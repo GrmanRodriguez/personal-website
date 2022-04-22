@@ -1,5 +1,5 @@
 import React, { useState, Suspense } from 'react';
-import { Switch, Route, BrowserRouter } from 'react-router-dom';
+import { Routes, Route, BrowserRouter } from 'react-router-dom';
 import Helmet from 'react-helmet';
 import { GlobalStyle } from './style/global-style';
 import Home from './views/home';
@@ -10,8 +10,6 @@ import Loading from './components/loading';
 const About = React.lazy(()=>import('./views/about'));
 const Contact = React.lazy(()=>import('./views/contact'));
 const Play = React.lazy(()=>import('./views/play'));
-const KalmanFilter = React.lazy(()=>import('./views/play/kalman-filter'));
-const PIDController = React.lazy(()=>import('./views/play/pid'));
 
 
 function App() {
@@ -25,39 +23,25 @@ function App() {
       <meta name="GermanRodriguez" content="Hi! I'm Germán. I'm a robotics engineer and developer." />
     </Helmet>
     <NavigationBar white={whiteNavbar}/>
-    <Switch>
-      <Route exact path="/" >
-        <Home setWhiteNavbar={setWhiteNavbar} />
-      </Route>
-      <Route exact path="/about">
+    <Routes>
+      <Route path="/" element={<Home setWhiteNavbar={setWhiteNavbar} />} />
+      <Route path="/about" element={
         <Suspense fallback={<Loading setWhiteNavbar={setWhiteNavbar}/>}>
           <About setWhiteNavbar={setWhiteNavbar} />
         </Suspense>
-      </Route>
-      <Route exact path="/contact">
+      }/>
+      <Route path="/contact" element={
         <Suspense fallback={<Loading setWhiteNavbar={setWhiteNavbar}/>}>
-          <Contact setWhiteNavbar={setWhiteNavbar} />
-        </Suspense>
-      </Route>
-      <Route exact path="/play">
+        <Contact setWhiteNavbar={setWhiteNavbar} />
+      </Suspense>
+      }/>        
+      <Route path="/play/*" element={
         <Suspense fallback={<Loading setWhiteNavbar={setWhiteNavbar}/>}>
           <Play setWhiteNavbar={setWhiteNavbar} />
         </Suspense>
-      </Route>
-      <Route exact path="/play/kalman-filter">
-        <Suspense fallback={<Loading setWhiteNavbar={setWhiteNavbar}/>}>
-          <KalmanFilter setWhiteNavbar={setWhiteNavbar} />
-        </Suspense>
-      </Route>
-      <Route exact path="/play/pid">
-        <Suspense fallback={<Loading setWhiteNavbar={setWhiteNavbar}/>}>
-          <PIDController setWhiteNavbar={setWhiteNavbar} />
-        </Suspense>
-      </Route>
-      <Route>
-        <NotFound setWhiteNavbar={setWhiteNavbar}></NotFound>
-      </Route>
-    </Switch>
+      }/>
+      <Route path='*' element={<NotFound setWhiteNavbar={setWhiteNavbar}></NotFound>}/>
+    </Routes>
     <GlobalStyle/>
     </BrowserRouter>
   );

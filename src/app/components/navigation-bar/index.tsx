@@ -36,10 +36,10 @@ function NavigationBar(navbarProps : NavbarProps) {
 
     const links = navbarRoutes.map((navbarRoute) => {
         return(
-            <NavLink exact
+            <NavLink
                 key={navbarRoute.name} 
                 to={navbarRoute.route}
-                activeClassName="active"
+                className={({ isActive }) => (isActive ? 'active' : '')}
                 onClick={()=>{setExpandMenu(false)}}>{navbarRoute.name}
             </NavLink>
         )
