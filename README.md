@@ -8,4 +8,4 @@ My tech stack (so far):
     - Styled Components
     - Netlify (and Netlify functions for simple serverless backend)
 
-You can visit it **[here!](https://peaceful-lumiere-82418e.netlify.app/)**.
+You can visit it at **[germanrodriguez.io](https://germanrodriguez.io)**!.
