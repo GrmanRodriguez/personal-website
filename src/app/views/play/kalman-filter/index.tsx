@@ -8,6 +8,7 @@ import { deviceSizes } from '../../../media';
 import { ExplanationContainer, GameMenu, MeasurementShape, ResetButtonContainer, SecondSliderContainer, SliderContainer, StateShape, KalmanShape } from './styles';
 import JoyStick from '../../../components/joystick';
 import { fifthParagraph, firstParagraph, fourthParagraph, secondParagraph, stateImage, thirdParagraph } from './explanation';
+import { Helmet } from 'react-helmet';
 
 function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
     useEffect(()=>{
@@ -240,6 +241,10 @@ function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
     }
 
     return (
+        <>
+        <Helmet>
+            <title>Kalman Filter | Germán Rodriguez</title>
+        </Helmet>
         <GridLayout color={LayoutColors.Yellow}>
             <GamePanel>
                 <GameTitle>Kalman Filter</GameTitle>
@@ -311,6 +316,7 @@ function KalmanFilter({ setWhiteNavbar} : ToggleNavbarProps) : JSX.Element {
                     onDown={()=>{onJoyStickPress('s')}}
                     onRelease={onJoyStickRelease}/>}
         </GridLayout>
+        </>
     )
 }
 
