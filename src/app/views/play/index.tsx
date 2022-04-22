@@ -1,40 +1,37 @@
-import React, { useEffect } from 'react';
-import { Helmet } from 'react-helmet';
-import { FlexLayout, FlexSubSectionTitle, LayoutColors, StyledButton } from '../../style/shared-style-components';
-import { ToggleNavbarProps } from '../../util';
-import { demos } from './demos';
-import { DemoContainer, DemoDescription, DemoImage, DemoName, DemosPanel, GoToDemoButtonContainer } from './styles';
+import React, {Suspense} from 'react'
+import { Helmet } from 'react-helmet'
+import { Route, Routes } from 'react-router-dom'
+import { ToggleNavbarProps } from '../../util'
+import Loading from '../../components/loading'
+import PlayHome from './home'
+import NotFound from '../not-found'
+const KalmanFilter = React.lazy(()=>import('./kalman-filter'))
+const PIDController = React.lazy(()=>import('./pid'))
 
-function Play({ setWhiteNavbar } : ToggleNavbarProps) : JSX.Element {
-
-    useEffect(()=>{
-        setWhiteNavbar(false)
-    }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
+function Play({setWhiteNavbar} : ToggleNavbarProps) {
     return (
         <>
-        <Helmet>
-            <title>Play | Germán Rodriguez</title>
-        </Helmet>
-        <FlexLayout color={LayoutColors.Yellow}>
-            <FlexSubSectionTitle>Play</FlexSubSectionTitle>
-            <DemosPanel>
-                {
-                    demos.map((demo, index) => (
-                        <DemoContainer key={`demo-${index}`} last={index === demos.length - 1}>
-                            <DemoName>{demo.title}</DemoName>
-                            <DemoImage src={`/assets/demos/${demo.image || 'placeholder.png'}`} />
-                            {demo.description && <DemoDescription>{demo.description}</DemoDescription>}
-                            <GoToDemoButtonContainer>
-                                <a href={demo.url}>
-                                    <StyledButton>Go To Demo!</StyledButton>
-                                </a>                                
-                            </GoToDemoButtonContainer>
-                        </DemoContainer>
-                    ))
-                }
-            </DemosPanel>
-        </FlexLayout> 
+            <Helmet>
+                <title>Play | Germán Rodriguez</title>
+            </Helmet>
+            <Routes>
+                <Route path="/kalman-filter" element={
+                    <Suspense fallback={<Loading setWhiteNavbar={setWhiteNavbar}/>}>
+                        <KalmanFilter setWhiteNavbar={setWhiteNavbar} />
+                    </Suspense>
+                }/>
+                <Route path="/pid" element={
+                    <Suspense fallback={<Loading setWhiteNavbar={setWhiteNavbar}/>}>
+                        <PIDController setWhiteNavbar={setWhiteNavbar} />
+                    </Suspense>
+                }/>
+                <Route path="/" element={
+                    <Suspense fallback={<Loading setWhiteNavbar={setWhiteNavbar}/>}>
+                        <PlayHome setWhiteNavbar={setWhiteNavbar} />
+                    </Suspense>
+                }/>
+                <Route path='*' element={<NotFound setWhiteNavbar={setWhiteNavbar}></NotFound>}/>
+            </Routes>
         </>
     )
 }

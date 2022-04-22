@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { device } from '../../media';
+import { device } from '../../../media';
 
 export const DemosPanel = styled.div`
     width: 70%;
