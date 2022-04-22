@@ -4,6 +4,7 @@ import { ToggleNavbarProps } from '../../util';
 import { GridLayout, LayoutColors, StyledButton } from '../../style/shared-style-components';
 import { FormIntroduction, FormPanel, FormMessage, Form, Label, SingleLineInput, MultiLineInput, FormButton } from './styles';
 import usePopup from '../../hooks/usePopup';
+import { Helmet } from 'react-helmet';
 
 function Contact({ setWhiteNavbar } : ToggleNavbarProps) : JSX.Element {
 
@@ -73,6 +74,10 @@ function Contact({ setWhiteNavbar } : ToggleNavbarProps) : JSX.Element {
     }
 
     return (
+        <>
+        <Helmet>
+            <title>Contact | Germán Rodriguez</title>
+        </Helmet>
         <GridLayout color={LayoutColors.Gray}>
             {PopupComponent}
             <FormPanel>
@@ -95,6 +100,7 @@ function Contact({ setWhiteNavbar } : ToggleNavbarProps) : JSX.Element {
                 </FormButton>                
             </FormPanel>
         </GridLayout>
+        </>
     )
 }
 
