@@ -9,9 +9,9 @@ export const workExperience : TimelineEvent[] = [
         city: 'Genoa',
         country: 'Italy',
         description: [
-            'Developed software for the ergoCub project',
-            'The software did beep boop and robot do things',
-            'It was very nice'
+            'Developed a platform to quickly deploy applications on robots using Docker',
+            'Developed Gazebo simulations to evaluate motor torques as a function of robot dimensions',
+            'Docker, Python, C++, YARP, Gazebo'
         ]
     },
     {

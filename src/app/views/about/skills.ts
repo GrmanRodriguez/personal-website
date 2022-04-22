@@ -63,25 +63,25 @@ export const generalLogos : SkillLogo[] = [
         name: "Python"
     },
     {
-        filename: "bash.svg",
-        name: "Bash scripting"
+        filename: "docker.png",
+        name: "Docker"
     },
     {
-        filename: "cmake.svg",
-        name: "CMake"
+        filename: "bash.svg",
+        name: "Bash scripting"
     },
     {
         filename: "csharp.svg",
         name: "C#"
     },
     {
-        filename: "docker.png",
-        name: "Docker"
-    },
-    {
         filename: "opencv.svg",
         name: "OpenCV"
     },
+    {
+        filename: "cmake.svg",
+        name: "CMake"
+    },    
     {
         filename: "matlab.png",
         name: "MATLAB"
